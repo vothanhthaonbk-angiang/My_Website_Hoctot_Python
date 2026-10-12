@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Website học lập trình Python dành cho học sinh THPT An Giang">
+  <title>Học tốt Python | Sở GD&ĐT An Giang</title>
+  <script src="https://cdn.jsdelivr.net/pyodide/v0.27.7/full/pyodide.js"></script>
+  <style>
+    :root {
+      --navy: #0d3d78;
+      --blue: #0878ef;
+      --sky: #eaf5ff;
+      --ink: #17365d;
+      --muted: #60748c;
+      --line: #d7e7f7;
+      --white: #fff;
+      --green: #0b9c78;
+      --yellow: #ffbd35;
+      --shadow: 0 8px 24px rgba(18, 74, 130, .09);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; font-family: Arial, Helvetica, sans-serif;
+      color: var(--ink); background: #f6faff; line-height: 1.55;
+    }
+    button, input, textarea { font: inherit; }
+    button { cursor: pointer; }
+    .topbar {
+      background: var(--navy); color: white; padding: 14px 5%;
+      display: flex; align-items: center; justify-content: space-between; gap: 18px;
+      flex-wrap: wrap;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .logo {
+      width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center;
+      background: white; color: var(--navy); font-weight: 800; border: 3px solid #a9d7ff;
+    }
+    .brand-title { font-size: 1.05rem; font-weight: 800; letter-spacing: .2px; }
+    .brand-subtitle { font-size: .8rem; opacity: .86; }
+    nav { display: flex; flex-wrap: wrap; gap: 8px; }
+    nav a { color: white; text-decoration: none; padding: 8px 10px; border-radius: 8px; }
+    nav a:hover, nav a:focus { background: rgba(255,255,255,.15); }
+    .hero {
+      padding: 52px 5%; display: grid; grid-template-columns: 1.1fr .9fr;
+      align-items: center; gap: 32px;
+      background: radial-gradient(circle at 85% 15%, #cbe8ff 0, transparent 32%),
+                  linear-gradient(115deg, #fff, var(--sky));
+    }
+    .eyebrow {
+      display: inline-block; background: #d6eaff; color: #075dbb;
+      border-radius: 999px; padding: 6px 13px; font-size: .82rem; font-weight: 700;
+    }
+    h1 { font-size: clamp(2.2rem, 5vw, 4rem); line-height: 1.05; margin: 16px 0; color: var(--navy); }
+    h1 span { color: var(--blue); }
+    .hero p { color: #425e7e; max-width: 620px; }
+    .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 22px; }
+    .btn {
+      border: 0; border-radius: 10px; padding: 12px 18px; font-weight: 700;
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-primary { background: var(--blue); color: white; }
+    .btn-primary:hover { background: #0065d3; }
+    .btn-secondary { background: white; color: var(--blue); border: 1px solid #8fc4ff; }
+    .hero-art {
+      min-height: 260px; border-radius: 26px; display: grid; place-items: center;
+      background: linear-gradient(145deg, #d9edff, #fff); box-shadow: var(--shadow);
+      border: 1px solid white; padding: 24px; text-align: center;
+    }
+    .python-mark { font-size: 5.5rem; line-height: 1; }
+    .code-preview {
+      margin-top: 12px; width: 100%; max-width: 420px; background: #10243b;
+      color: #d9f2ff; padding: 16px; border-radius: 12px; text-align: left;
+      font: .88rem/1.7 Consolas, Monaco, monospace; overflow-wrap: anywhere;
+    }
+    .wrap { width: min(1200px, 92%); margin: 0 auto; }
+    section { padding: 34px 0; }
+    .section-head { display: flex; justify-content: space-between; align-items: end; gap: 12px; margin-bottom: 18px; }
+    h2 { color: var(--navy); margin: 0; font-size: clamp(1.4rem, 3vw, 2rem); }
+    .muted { color: var(--muted); }
+    .features { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; }
+    .feature, .course, .panel {
+      background: white; border: 1px solid var(--line); border-radius: 16px;
+      padding: 18px; box-shadow: var(--shadow);
+    }
+    .feature { text-align: center; }
+    .feature .icon { font-size: 2rem; }
+    .feature h3 { font-size: 1rem; margin: 8px 0 5px; }
+    .feature p { color: var(--muted); font-size: .9rem; margin: 0; }
+    .learning-layout { display: grid; grid-template-columns: minmax(0, 1fr) 290px; gap: 20px; }
+    .courses { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .course { padding: 0; overflow: hidden; }
+    .course-banner { padding: 17px; color: white; font-weight: 800; font-size: 1.1rem; background: linear-gradient(120deg, #1688f7, #54b6ff); }
+    .course:nth-child(2) .course-banner { background: linear-gradient(120deg, #079b75, #42cda5); }
+    .course:nth-child(3) .course-banner { background: linear-gradient(120deg, #6456d9, #9a8bff); }
+    .course:nth-child(4) .course-banner { background: linear-gradient(120deg, #f08b15, #ffc34d); }
+    .course-body { padding: 16px; }
+    .course-body ul { padding-left: 20px; color: var(--muted); min-height: 76px; }
+    .course-body .btn { width: 100%; }
+    .side-stack { display: grid; align-content: start; gap: 16px; }
+    .progress-track { height: 10px; background: #e6f0fb; border-radius: 99px; overflow: hidden; margin: 12px 0; }
+    .progress-fill { width: 0%; height: 100%; background: var(--green); transition: width .3s; }
+    .resource-list { padding: 0; margin: 10px 0 0; list-style: none; }
+    .resource-list li { border-top: 1px solid var(--line); padding: 9px 0; }
+    .lab-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(280px, .85fr); gap: 18px; }
+    .editor {
+      width: 100%; min-height: 270px; resize: vertical; border: 1px solid #243e5d;
+      border-radius: 10px; background: #10243b; color: #d9f2ff;
+      padding: 16px; font: 14px/1.65 Consolas, Monaco, monospace;
+      tab-size: 4;
+    }
+    .editor:focus { outline: 3px solid #9dceff; outline-offset: 2px; }
+    .lab-toolbar { display: flex; flex-wrap: wrap; gap: 10px; margin: 12px 0; }
+    .output {
+      min-height: 110px; white-space: pre-wrap; overflow-wrap: anywhere;
+      background: #f0f6fc; border: 1px solid var(--line); border-radius: 10px;
+      padding: 14px; font: 14px/1.6 Consolas, Monaco, monospace;
+    }
+    .status { font-size: .9rem; color: var(--muted); }
+    .quiz-question { font-weight: 700; margin: 10px 0; }
+    .quiz-options { display: grid; gap: 8px; }
+    .quiz-options label { padding: 9px 11px; border: 1px solid var(--line); border-radius: 9px; }
+    .quiz-options label:hover { background: var(--sky); }
+    .callout {
+      background: #e7f4ff; border: 1px solid #c8e5ff; border-radius: 16px;
+      padding: 22px; margin: 12px 0 34px;
+    }
+    footer { background: #0b3569; color: white; text-align: center; padding: 28px 5%; }
+    footer strong { display: block; font-size: 1.15rem; }
+    footer .teacher { margin-top: 8px; color: #d6eaff; }
+    footer small { display: block; margin-top: 12px; opacity: .8; }
+    @media (max-width: 900px) {
+      .hero, .learning-layout, .lab-grid { grid-template-columns: 1fr; }
+      .features { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .side-stack { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 560px) {
+      .topbar { padding: 12px 4%; }
+      nav { width: 100%; }
+      nav a { padding: 7px; font-size: .9rem; }
+      .hero { padding: 34px 4%; }
+      .features, .courses, .side-stack { grid-template-columns: 1fr; }
+      .section-head { align-items: start; flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo" aria-label="Biểu trưng minh họa">AG</div>
+      <div>
+        <div class="brand-title">SỞ GIÁO DỤC VÀ ĐÀO TẠO AN GIANG</div>
+        <div class="brand-subtitle">Đồng hành cùng học sinh trên hành trình tri thức</div>
+      </div>
+    </div>
+    <nav aria-label="Điều hướng chính">
+      <a href="#trang-chu">Trang chủ</a>
+      <a href="#khoa-hoc">Khóa học</a>
+      <a href="#thuc-hanh">Thực hành</a>
+      <a href="#bai-tap">Bài tập</a>
+      <a href="#tai-lieu">Tài liệu</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" id="trang-chu">
+      <div>
+        <span class="eyebrow">HỌC LẬP TRÌNH DỄ DÀNG – HIỆU QUẢ</span>
+        <h1>Học tốt phần mềm <span>PYTHON</span></h1>
+        <p>Từ cơ bản đến nâng cao – học qua ví dụ, thực hành và dự án gần gũi với học sinh THPT.</p>
+        <div class="actions">
+          <a class="btn btn-primary" href="#thuc-hanh">▶ Bắt đầu thực hành</a>
+          <a class="btn btn-secondary" href="#khoa-hoc">▤ Xem lộ trình học</a>
+        </div>
+      </div>
+      <div class="hero-art" aria-label="Minh họa học lập trình Python">
+        <div class="python-mark" aria-hidden="true">🐍</div>
+        <strong style="font-size:1.4rem;color:#0d3d78">HỌC • THỰC HÀNH • SÁNG TẠO</strong>
+        <div class="code-preview"># Chương trình đầu tiên<br>print("Hello, Python!")<br><br># Hãy bắt đầu từ một dòng code!</div>
+      </div>
+    </section>
+
+    <section class="wrap" aria-label="Ưu điểm của website">
+      <div class="features">
+        <article class="feature"><div class="icon">🧭</div><h3>Lộ trình rõ ràng</h3><p>Từ kiến thức cơ bản đến nâng cao.</p></article>
+        <article class="feature"><div class="icon">🎬</div><h3>Bài học trực quan</h3><p>Ví dụ ngắn gọn, dễ hiểu.</p></article>
+        <article class="feature"><div class="icon">💻</div><h3>Thực hành trực tuyến</h3><p>Chạy Python ngay trong trình duyệt.</p></article>
+        <article class="feature"><div class="icon">📝</div><h3>Bài tập đa dạng</h3><p>Ôn tập và tự đánh giá kiến thức.</p></article>
+        <article class="feature"><div class="icon">🌱</div><h3>Học tập chủ động</h3><p>Tiến bộ từng bước mỗi ngày.</p></article>
+      </div>
+    </section>
+
+    <section class="wrap" id="khoa-hoc">
+      <div class="section-head">
+        <div><h2>📘 Khóa học Python</h2><div class="muted">Chọn một chủ đề để bắt đầu.</div></div>
+      </div>
+      <div class="learning-layout">
+        <div class="courses">
+          <article class="course">
+            <div class="course-banner">01 · Nhập môn Python</div>
+            <div class="course-body"><h3>Làm quen với Python</h3>
+              <ul><li>Python là gì?</li><li>Hàm print() và input()</li><li>Biến và kiểu dữ liệu</li></ul>
+              <button class="btn btn-primary lesson-btn" data-lesson="intro">Học chủ đề này</button>
+            </div>
+          </article>
+          <article class="course">
+            <div class="course-banner">02 · Cấu trúc điều khiển</div>
+            <div class="course-body"><h3>Điều kiện và vòng lặp</h3>
+              <ul><li>if, elif, else</li><li>Vòng lặp for, while</li><li>Thực hành bài toán nhỏ</li></ul>
+              <button class="btn btn-primary lesson-btn" data-lesson="control">Học chủ đề này</button>
+            </div>
+          </article>
+          <article class="course">
+            <div class="course-banner">03 · Cấu trúc dữ liệu</div>
+            <div class="course-body"><h3>Lưu trữ và xử lý dữ liệu</h3>
+              <ul><li>Chuỗi và danh sách</li><li>Tuple, set, dictionary</li><li>Duyệt và xử lý dữ liệu</li></ul>
+              <button class="btn btn-primary lesson-btn" data-lesson="data">Học chủ đề này</button>
+            </div>
+          </article>
+          <article class="course">
+            <div class="course-banner">04 · Dự án thực tế</div>
+            <div class="course-body"><h3>Vận dụng kiến thức</h3>
+              <ul><li>Trò chơi đoán số</li><li>Tính điểm trung bình</li><li>Giải quyết vấn đề thực tế</li></ul>
+              <button class="btn btn-primary lesson-btn" data-lesson="project">Học chủ đề này</button>
+            </div>
+          </article>
+        </div>
+        <aside class="side-stack">
+          <div class="panel">
+            <h3>🎯 Tiến độ học tập</h3>
+            <div><strong id="progress-text">0% hoàn thành</strong></div>
+            <div class="progress-track" role="progressbar" aria-label="Tiến độ học tập" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+            <p class="muted" id="progress-detail">Đã hoàn thành 0/4 chủ đề trên thiết bị này.</p>
+            <button class="btn btn-secondary" id="reset-progress">Đặt lại tiến độ</button>
+          </div>
+          <div class="panel" id="tai-lieu">
+            <h3>📂 Tài liệu & công cụ</h3>
+            <ul class="resource-list">
+              <li><a href="https://docs.python.org/3/tutorial/" target="_blank" rel="noopener noreferrer">Hướng dẫn Python chính thức</a></li>
+              <li><a href="https://pyodide.org/" target="_blank" rel="noopener noreferrer">Tài liệu Pyodide</a></li>
+              <li><a href="https://www.python.org/" target="_blank" rel="noopener noreferrer">Trang chủ Python</a></li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="wrap" id="thuc-hanh">
+      <div class="section-head">
+        <div><h2>💻 Phòng thực hành Python</h2><div class="muted">Viết mã và chạy trực tiếp trong trình duyệt bằng Pyodide.</div></div>
+      </div>
+      <div class="lab-grid">
+        <div class="panel">
+          <label for="python-code"><strong>Mã nguồn Python</strong></label>
+          <textarea class="editor" id="python-code" spellcheck="false" aria-label="Trình soạn thảo mã Python">name = input("Bạn tên là gì? ")
+print(f"Xin chào, {name}!")
+print("Chúc bạn học Python thật tốt!")</textarea>
+          <div class="lab-toolbar">
+            <button class="btn btn-primary" id="run-code">▶ Chạy Python</button>
+            <button class="btn btn-secondary" id="example-code">Nạp ví dụ</button>
+            <button class="btn btn-secondary" id="clear-output">Xóa kết quả</button>
+          </div>
+          <div class="status" id="runtime-status" role="status" aria-live="polite">Đang chuẩn bị trình chạy Python…</div>
+        </div>
+        <div class="panel">
+          <h3>📟 Kết quả chạy</h3>
+          <div class="output" id="python-output" role="status" aria-live="polite">Kết quả sẽ xuất hiện tại đây.</div>
+          <p class="muted">Nếu chương trình dùng input(), trình chạy sẽ hỏi dữ liệu trong hộp thoại của trình duyệt.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap" id="bai-tap">
+      <div class="section-head"><div><h2>🧠 Kiểm tra nhanh</h2><div class="muted">Một câu hỏi khởi động.</div></div></div>
+      <div class="panel">
+        <div class="quiz-question">Lệnh nào dùng để hiển thị nội dung ra màn hình trong Python?</div>
+        <div class="quiz-options">
+          <label><input type="radio" name="quiz" value="a"> input()</label>
+          <label><input type="radio" name="quiz" value="b"> print()</label>
+          <label><input type="radio" name="quiz" value="c"> display_text()</label>
+        </div>
+        <div class="lab-toolbar">
+          <button class="btn btn-primary" id="check-quiz">Kiểm tra đáp án</button>
+          <span id="quiz-result" class="status" aria-live="polite"></span>
+        </div>
+      </div>
+    </section>
+
+    <section class="wrap">
+      <div class="callout">
+        <h2>✨ Học hôm nay – Sáng tạo ngày mai</h2>
+        <p>Hãy bắt đầu bằng một chương trình nhỏ, luyện tập thường xuyên và từng bước xây dựng dự án của riêng mình.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <strong>SỞ GIÁO DỤC VÀ ĐÀO TẠO AN GIANG</strong>
+    <div class="teacher">Giáo viên thực hiện: <b>VÕ THỊ THANH THẢO</b></div>
+    <small>Website minh họa phục vụ học tập lập trình Python.</small>
+  </footer>
+
+  <script>
+    "use strict";
+
+    const statusEl = document.getElementById("runtime-status");
+    const outputEl = document.getElementById("python-output");
+    const codeEl = document.getElementById("python-code");
+    const runButton = document.getElementById("run-code");
+    let pyodide = null;
+    let running = false;
+
+    const examples = {
+      intro: 'name = input("Nhập tên của bạn: ")\\nprint(f"Xin chào, {name}!")\\nprint("Chào mừng đến với Python!")',
+      control: 'n = int(input("Nhập một số nguyên: "))\\nif n % 2 == 0:\\n    print(n, "là số chẵn")\\nelse:\\n    print(n, "là số lẻ")',
+      data: 'scores = [8, 9, 7.5, 10]\\nprint("Danh sách điểm:", scores)\\nprint("Điểm trung bình:", sum(scores) / len(scores))',
+      project: 'import random\\nsecret = random.randint(1, 10)\\nguess = int(input("Đoán số từ 1 đến 10: "))\\nprint("Chính xác!" if guess == secret else f"Chưa đúng. Số bí mật là {secret}.")'
+    };
+
+    async function initializePython() {
+      try {
+        statusEl.textContent = "Đang tải Pyodide; lần đầu có thể mất một lúc…";
+        pyodide = await loadPyodide();
+        statusEl.textContent = "Sẵn sàng! Bạn có thể chạy chương trình Python.";
+      } catch (error) {
+        statusEl.textContent = "Không tải được Pyodide. Hãy kiểm tra Internet hoặc thử lại.";
+        outputEl.textContent = String(error);
+      }
+    }
+
+    runButton.addEventListener("click", async () => {
+      if (running) return;
+      if (!pyodide) {
+        outputEl.textContent = "Trình chạy chưa sẵn sàng. Hãy chờ tải Pyodide hoàn tất.";
+        return;
+      }
+      running = true;
+      runButton.disabled = true;
+      outputEl.textContent = "Đang chạy…";
+      try {
+        // Ví dụ đơn giản: chuyển print() thành vùng ghi kết quả của website.
+        // input() dùng hộp thoại prompt của trình duyệt.
+        pyodide.setStdout({ batched: (text) => {
+          outputEl.textContent = (outputEl.textContent === "Đang chạy…" ? "" : outputEl.textContent) + text + "\\n";
+        }});
+        pyodide.setStderr({ batched: (text) => {
+          outputEl.textContent = (outputEl.textContent === "Đang chạy…" ? "" : outputEl.textContent) + text + "\\n";
+        }});
+        pyodide.globals.set("browser_input", (promptText) => {
+          const answer = window.prompt(String(promptText ?? "Nhập dữ liệu:"));
+          if (answer === null) throw new Error("Bạn đã hủy thao tác nhập dữ liệu.");
+          return answer;
+        });
+        const wrappedCode = "input = browser_input\\n" + codeEl.value;
+        await pyodide.runPythonAsync(wrappedCode);
+        if (!outputEl.textContent.trim()) outputEl.textContent = "Chương trình chạy xong nhưng không có nội dung in ra.";
+        statusEl.textContent = "Chạy chương trình hoàn tất.";
+      } catch (error) {
+        outputEl.textContent += "\\nLỗi: " + String(error);
+        statusEl.textContent = "Chương trình gặp lỗi. Hãy đọc thông báo và sửa mã.";
+      } finally {
+        running = false;
+        runButton.disabled = false;
+      }
+    });
+
+    document.getElementById("example-code").addEventListener("click", () => {
+      codeEl.value = 'for i in range(1, 6):\\n    print("Xin chào Python", i)';
+      outputEl.textContent = "Đã nạp ví dụ. Nhấn “Chạy Python” để xem kết quả.";
+    });
+    document.getElementById("clear-output").addEventListener("click", () => {
+      outputEl.textContent = "";
+    });
+
+    const completedKey = "pythonEduCompletedLessons";
+    function getCompleted() {
+      try { return JSON.parse(localStorage.getItem(completedKey) || "[]"); }
+      catch { return []; }
+    }
+    function updateProgress() {
+      const completed = getCompleted();
+      const percent = Math.round(completed.length / 4 * 100);
+      document.getElementById("progress-text").textContent = percent + "% hoàn thành";
+      document.getElementById("progress-fill").style.width = percent + "%";
+      document.getElementById("progress-bar").setAttribute("aria-valuenow", String(percent));
+      document.getElementById("progress-detail").textContent =
+        `Đã hoàn thành ${completed.length}/4 chủ đề trên thiết bị này.`;
+      document.querySelectorAll(".lesson-btn").forEach(button => {
+        const done = completed.includes(button.dataset.lesson);
+        button.textContent = done ? "✓ Đã đánh dấu hoàn thành" : "Học chủ đề này";
+      });
+    }
+    document.querySelectorAll(".lesson-btn").forEach(button => {
+      button.addEventListener("click", () => {
+        const completed = getCompleted();
+        const id = button.dataset.lesson;
+        if (!completed.includes(id)) completed.push(id);
+        localStorage.setItem(completedKey, JSON.stringify(completed));
+        updateProgress();
+        const samples = {
+          intro: 'print("Xin chào Python!")',
+          control: 'n = 7\\nprint("Chẵn" if n % 2 == 0 else "Lẻ")',
+          data: 'numbers = [2, 4, 6, 8]\\nprint(sum(numbers))',
+          project: 'for i in range(1, 4):\\n    print("Dự án Python", i)'
+        };
+        codeEl.value = samples[id];
+        document.getElementById("thuc-hanh").scrollIntoView({ behavior: "smooth" });
+      });
+    });
+    document.getElementById("reset-progress").addEventListener("click", () => {
+      localStorage.removeItem(completedKey);
+      updateProgress();
+    });
+
+    document.getElementById("check-quiz").addEventListener("click", () => {
+      const selected = document.querySelector('input[name="quiz"]:checked');
+      const result = document.getElementById("quiz-result");
+      if (!selected) {
+        result.textContent = "Vui lòng chọn một đáp án.";
+      } else if (selected.value === "b") {
+        result.textContent = "Chính xác! print() dùng để hiển thị nội dung.";
+      } else {
+        result.textContent = "Chưa đúng. Hãy nhớ: print() dùng để hiển thị, input() dùng để nhập dữ liệu.";
+      }
+    });
+
+    updateProgress();
+    initializePython();
+  </script>
+</body>
+</html>
